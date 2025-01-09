@@ -8,9 +8,9 @@ import useDraftMutation from '../composables/useDraftMutation';
 const { params } = useRoute()
 
 
-const { isLoading, data} = useDraft(+params.id);
+const { isLoading, draft} = useDraft(+params.id);
 
-const { isPending, saveDraft, sendProposal } = useDraftMutation();
+const { isPending,isPendingUpdate, saveDraft, sendProposal } = useDraftMutation();
 
 </script>
 
@@ -22,7 +22,7 @@ const { isPending, saveDraft, sendProposal } = useDraftMutation();
     </div>
 
     <div class="mx-auto max-w-2xl text-center">
-      <h2 class="text-4xl font-semibold tracking-tight text-white sm:text-4xl">Edita tú Candidatura #{{ params.id }} Premios FCEITOP</h2>
+      <h2 class="text-4xl font-semibold tracking-tight text-white sm:text-4xl">Edita tú Candidatura #{{ params.id }} Premios FCEI TOP</h2>
     </div>
   </div>
 
@@ -32,9 +32,9 @@ const { isPending, saveDraft, sendProposal } = useDraftMutation();
 
     <ProposalFormComponent v-if="!isLoading"
       @on-draft="saveDraft"
-      :is-saving-draft="isPending"
+      :is-saving-draft="isPendingUpdate"
       :is-sending="isPending"
-      :proposal="data"
+      :proposal="draft"
       @on-send="sendProposal"
     />
 

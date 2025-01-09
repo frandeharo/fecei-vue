@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useMutation } from '@tanstack/vue-query'
+import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import { toRaw } from 'vue'
 import type { DraftFrm } from '../interfaces/draftFrm'
 import proposalsService from '../services/proposals.service'
@@ -9,6 +9,7 @@ import { useRouter } from 'vue-router'
 const useDraftMutation = () => {
   const toast = useToast()
   const router = useRouter()
+  const queryClient = useQueryClient()
 
   const dataFromdraft = (e: any) => {
     const newData: Record<string, any> = {}
@@ -36,10 +37,11 @@ const useDraftMutation = () => {
     onSuccess: (data) => {
       toast.add({
         severity: 'success',
-        summary: 'Propuesta enviada',
-        detail: 'Se ha enviado correctamente',
+        summary: 'Nuevo Borrador',
+        detail: 'Se ha creado un nuevo borrador',
       })
-      router.replace({ name: 'home', params: { id: data.proposal_id } })
+
+      router.replace({ name: 'edit-proposal', params: { id: data.proposal_id } })
     },
   })
 
@@ -59,6 +61,11 @@ const useDraftMutation = () => {
         severity: 'success',
         summary: 'Propuesta enviada',
         detail: 'Propuesta actualizada y enviada correctamente',
+      })
+
+      queryClient.refetchQueries({
+        queryKey: ['draft'],
+        exact: false,
       })
       router.replace({ name: 'home', params: { id: data.proposal_id } })
     },
@@ -97,6 +104,12 @@ const useDraftMutation = () => {
     },
     onSuccess: (data) => {
       toast.add({ severity: 'success', summary: 'Borrador Guardado', detail: '' })
+
+      queryClient.refetchQueries({
+        queryKey: ['draft'],
+        exact: false,
+      })
+
       router.replace({ name: 'edit-proposal', params: { id: data.proposal_id } })
     },
   })

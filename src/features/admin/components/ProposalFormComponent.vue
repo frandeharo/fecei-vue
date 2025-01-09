@@ -1,16 +1,18 @@
 <!-- eslint-disable @typescript-eslint/no-explicit-any -->
-
 <script setup lang="ts">
 import { ref, toRaw } from 'vue';
 import Editor from 'primevue/editor';
 import ScrollTop from 'primevue/scrolltop';
 import { z } from 'zod';
 import { zodResolver } from '@primevue/forms/resolvers/zod';
-
+import { CloudArrowDownIcon } from '@heroicons/vue/24/outline'
 import useCategories from '@/shared/composables/useCategories';
 import type { Proposal } from '../interfaces/proposal';
-
+import useDownload from '../../../shared/composables/useDownload';
+import { InformationCircleIcon } from '@heroicons/vue/20/solid'
 const { categories } = useCategories();
+
+const { downloadDoc } = useDownload();
 
 interface Emits {
     (e: 'onSend', v: any): any
@@ -30,9 +32,7 @@ const props = defineProps<Props>();
 const initialValues = {...props.proposal};
 
 
-const linkSchema = z.string()
-  .min(1, 'El enlace no puede estar vacío')
-  .url('Debe ser una URL válida');
+const linkSchema = z.string().optional();
 
 const fileSchema = z.custom<File>((file) => file instanceof File).optional();
 
@@ -244,8 +244,8 @@ const onDraft = () => {
                 :maxFileSize="10000000"
               />
               <small
-              v-if="props.proposal?.doc_1"
-              class="p-2 bg-slate-200 rounded-sm">{{ props.proposal?.doc_1 }}</small>
+              v-if="props.proposal?.doc_1" @click="downloadDoc(props.proposal!.id!, 'url_doc_1', props.proposal?.doc_1)"
+              class=" flex gap-x-2 p-2 bg-slate-200 hover:cursor-pointer rounded-sm"><CloudArrowDownIcon class="h-5 w-5" />{{ props.proposal?.doc_1 }}</small>
           </div>
           </div>
 
@@ -264,8 +264,8 @@ const onDraft = () => {
                 :maxFileSize="10000000"
               />
               <small
-              v-if="props.proposal?.doc_2"
-              class="p-2 bg-slate-200 rounded-sm">{{ props.proposal?.doc_2 }}</small>
+              v-if="props.proposal?.doc_2" @click="downloadDoc(props.proposal!.id!, 'url_doc_2', props.proposal?.doc_2)"
+              class=" flex gap-x-2 p-2 bg-slate-200 hover:cursor-pointer rounded-sm"><CloudArrowDownIcon class="h-5 w-5" />{{ props.proposal?.doc_2 }}</small>
 
             </div>
           </div>
@@ -285,8 +285,8 @@ const onDraft = () => {
                 :maxFileSize="10000000"
               />
               <small
-              v-if="props.proposal?.doc_3"
-              class="p-2 bg-slate-200 rounded-sm">{{ props.proposal?.doc_3 }}</small>
+              v-if="props.proposal?.doc_3" @click="downloadDoc(props.proposal!.id!, 'url_doc_3', props.proposal?.doc_3)"
+              class=" flex gap-x-2 p-2 bg-slate-200 hover:cursor-pointer rounded-sm"><CloudArrowDownIcon class="h-5 w-5" />{{ props.proposal?.doc_3 }}</small>
           </div>
           </div>
 
@@ -305,8 +305,9 @@ const onDraft = () => {
                 :maxFileSize="10000000"
               />
               <small
-              v-if="props.proposal?.doc_4"
-              class="p-2 bg-slate-200 rounded-sm">{{ props.proposal?.doc_4 }}</small>
+              v-if="props.proposal?.doc_4" @click="downloadDoc(props.proposal!.id!, 'url_doc_4', props.proposal?.doc_4)"
+              class=" flex gap-x-2 p-2 bg-slate-200 hover:cursor-pointer rounded-sm"><CloudArrowDownIcon class="h-5 w-5" />
+              {{ props.proposal?.doc_4 }}</small>
 
           </div>
           </div>
@@ -353,9 +354,13 @@ const onDraft = () => {
                 choose-label="Buscar fichero"
                 :maxFileSize="10000000"
               />
+
               <small
-              v-if="props.proposal?.image"
-              class="p-2 bg-slate-200 rounded-sm">{{ props.proposal?.image }}</small>
+              v-if="props.proposal?.image" @click="downloadDoc(props.proposal!.id!, 'url_image', props.proposal?.image)"
+              class=" flex gap-x-2 p-2 hover:cursor-pointer bg-slate-200 rounded-sm"><CloudArrowDownIcon class="h-5 w-5" />
+              {{ props.proposal?.image }}
+
+              </small>
             </div>
           </div>
           </div>
@@ -457,7 +462,7 @@ const onDraft = () => {
               <div class="md:col-span-5">
               <InputText
                 v-model="links[index]"
-                type="url"
+                type="text"
                 placeholder="Introduce un enlace"
                 :class="{'p-invalid': errors[index]}"
               />
@@ -482,6 +487,18 @@ const onDraft = () => {
 
     </div>
 
+    <div class="rounded-md bg-red-50 p-4" v-if="!$form.valid">
+      <div class="flex">
+        <div class="shrink-0">
+          <InformationCircleIcon class="size-5 text-red-400" aria-hidden="true" />
+        </div>
+        <div class="ml-3 flex-1 md:flex md:justify-between">
+          <p class="text-sm text-red-700">No ha completado todos los datos, revise la información de la propuesta.</p>
+
+        </div>
+      </div>
+    </div>
+
     <div class="mt-6 flex items-center justify-end gap-x-6">
       <RouterLink :to="{name:'home'}"  class="text-sm/6 font-semibold text-gray-900">Salir sin guardar</RouterLink>
 
@@ -499,7 +516,7 @@ const onDraft = () => {
       <Button
         v-if="props.proposal?.status !== 'SENT'"
         label="Enviar Candidatura"
-        :disabled="$form.$invalid"
+        :disabled="!$form.valid"
         :loading="props.isSending"
         :icon="(!props.isSending) ? 'pi pi-send' : 'pi pi-refresh'"
         type="submit" class="rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600">
