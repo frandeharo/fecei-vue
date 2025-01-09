@@ -1,0 +1,29 @@
+export interface DraftFrm {
+  id?: number
+  candidate?: string
+  category_id?: number
+  development?: string
+  email?: string
+  entity?: string
+  location?: string
+  phone_contact?: string
+  project_title?: string
+  proponent?: string
+  results?: string
+  resumen?: string
+  scope?: string
+  testimonial_2?: string
+  testimonial_3?: string
+  testimonial?: string
+  testimony_name_2?: string
+  testimony_name_3?: string
+  testimony_name?: string
+  title?: string
+  url_doc_1?: File
+  url_doc_2?: File
+  url_doc_3?: File
+  url_doc_4?: File
+  url_image?: File
+  links?: string[]
+  status: string
+}
