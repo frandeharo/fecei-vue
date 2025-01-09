@@ -8,3 +8,21 @@ export interface LoginResponse {
   token: string
   name: string
 }
+
+export interface RegisterFrm {
+  email: string
+  nombre: string
+  password: string
+}
+
+export interface RegisterResponse {
+  success: boolean
+  message: string
+  user: User
+}
+
+export interface User {
+  id: string
+  nombre: string
+  email: string
+}

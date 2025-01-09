@@ -28,7 +28,7 @@ const router = useRouter();
       selectionMode="single"
       :rows="10" tableStyle="min-width: 50rem" tableClass="w-full" >
 
-    <template #empty> No se han encontrado propuestas. </template>
+    <template #empty> No ha realizado ninguna propuesta. </template>
     <template #loading> Buscando propuestas. Por favor espere. </template>
 
     <Column field="id" header="Referencia" class="text-xs" :showFilterMenu="false">

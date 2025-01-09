@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import authService from '@/auth/services/auth.service'
 import { CustomError } from '@/shared/errors/customError'
 import { defineStore } from 'pinia'
@@ -38,8 +39,6 @@ export const useAuthStore = defineStore('auth', () => {
       setName(res.name)
       setError(false, '')
       router.push({ name: 'home' })
-
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       console.log(error)
       toast.add({ severity: 'error', summary: 'Error', detail: error.msg })
@@ -63,8 +62,6 @@ export const useAuthStore = defineStore('auth', () => {
       setStatus('authenticated')
       setName(localStorage.getItem('name') || '')
       return true
-
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       setStatus('idle')
       setToken(null)
@@ -93,6 +90,26 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
+  const register = async (email: string, password: string, name: string) => {
+    try {
+      await auth.register({ email, password, nombre: name })
+      toast.add({
+        severity: 'success',
+        summary: 'Usuario registrado',
+        detail: 'El usuario se ha registrado correctamente',
+      })
+      setError(false, '')
+      await login(email, password)
+    } catch (error: any) {
+      setError(true, error.msg)
+      toast.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: 'No se ha podido registrar el usuario',
+      })
+    }
+  }
+
   const logout = () => {
     localStorage.removeItem('token')
     localStorage.removeItem('name')
@@ -114,5 +131,6 @@ export const useAuthStore = defineStore('auth', () => {
     name,
     logout,
     changePassword,
+    register,
   }
 })
