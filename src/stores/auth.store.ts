@@ -15,6 +15,7 @@ export const useAuthStore = defineStore('auth', () => {
   const user = ref<number | null>(null)
   const status = ref<string>('idle')
   const token = ref<string | null>(localStorage.getItem('token'))
+  const role = ref<string | null>(localStorage.getItem('role'))
   const hasError = ref<boolean>(false)
   const errorMessage = ref<string>('')
 
@@ -27,16 +28,21 @@ export const useAuthStore = defineStore('auth', () => {
   const setToken = (newToken: string | null) => (token.value = newToken)
   const setName = (newName: string) => (name.value = newName)
   const setUser = (newUser: number) => (user.value = newUser)
+  const setRole = (newRole: string) => (role.value = newRole)
 
   const login = async (email: string, password: string) => {
     try {
       const res = await auth.login({ email, password })
+
       localStorage.setItem('token', res.token)
       localStorage.setItem('name', res.name)
+      localStorage.setItem('role', res.role)
       setStatus('authenticated')
       setToken(res.token)
       setUser(res.i)
       setName(res.name)
+      setRole(res.role)
+
       setError(false, '')
       router.push({ name: 'home' })
     } catch (error: any) {
@@ -46,6 +52,7 @@ export const useAuthStore = defineStore('auth', () => {
       setToken(null)
       setUser(0)
       setName('')
+      setRole('')
       setError(true, error.message)
     }
   }
@@ -61,12 +68,10 @@ export const useAuthStore = defineStore('auth', () => {
 
       setStatus('authenticated')
       setName(localStorage.getItem('name') || '')
+      setRole(localStorage.getItem('role') || '')
       return true
     } catch (error: any) {
-      setStatus('idle')
-      setToken(null)
-      setUser(0)
-      setName('')
+      logout()
       setError(true, error.msg)
     }
   }
@@ -101,11 +106,12 @@ export const useAuthStore = defineStore('auth', () => {
       setError(false, '')
       await login(email, password)
     } catch (error: any) {
+      console.log(error)
       setError(true, error.msg)
       toast.add({
         severity: 'error',
         summary: 'Error',
-        detail: 'No se ha podido registrar el usuario',
+        detail: error.msg,
       })
     }
   }
@@ -114,10 +120,12 @@ export const useAuthStore = defineStore('auth', () => {
     localStorage.removeItem('token')
     localStorage.removeItem('name')
     localStorage.removeItem('i')
+    localStorage.removeItem('role')
     setStatus('idle')
     setToken(null)
     setUser(0)
     setName('')
+    setRole('')
     router.push({ name: 'login' })
   }
 
@@ -132,5 +140,6 @@ export const useAuthStore = defineStore('auth', () => {
     logout,
     changePassword,
     register,
+    role,
   }
 })

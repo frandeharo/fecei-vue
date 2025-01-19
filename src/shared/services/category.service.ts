@@ -6,7 +6,11 @@ class CategoryService {
 
   async getAll(): Promise<Category[]> {
     const clients = await this.axiosToken
-      .get<Category[]>('/categories')
+      .get<Category[]>('/categories', {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+      })
       .then((response) => response.data)
       .catch((error) => {
         if (error.response?.status === 404) {
@@ -22,7 +26,11 @@ class CategoryService {
 
   async getOne(id: number): Promise<Category> {
     const client = await this.axiosToken
-      .get<Category>(`/categories/${id}`)
+      .get<Category>(`/categories/${id}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+      })
       .then((response) => response.data)
       .catch((error) => {
         if (error.response?.status === 404) {

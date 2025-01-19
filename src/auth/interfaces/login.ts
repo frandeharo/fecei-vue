@@ -7,6 +7,7 @@ export interface LoginResponse {
   i: number
   token: string
   name: string
+  role: string
 }
 
 export interface RegisterFrm {

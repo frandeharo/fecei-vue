@@ -15,6 +15,7 @@ const useAuth = () => {
     errorMessage: computed(() => store.errorMessage),
     token: computed(() => store.token),
     name: computed(() => store.name),
+    role: computed(() => store.role),
     login: (data: LoginFrm) => store.login(data.email, data.password),
     logout: () => store.logout(),
     changePassword: (password: string) => store.changePassword(password),

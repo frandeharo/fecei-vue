@@ -50,6 +50,7 @@ class ProposalService {
       .post<any>(`/proposals`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
       })
       .then((response: any) => response.data)
@@ -84,6 +85,7 @@ class ProposalService {
       .post<any>(`/proposals`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
       })
       .then((response: any) => response.data)
@@ -115,7 +117,11 @@ class ProposalService {
     })
 
     return await this.axiosToken
-      .post<any>(`/proposals/edit/${id}`, formData)
+      .post<any>(`/proposals/edit/${id}`, formData, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+      })
       .then((response: any) => response.data)
       .catch((error: any) => {
         if (error.response?.status === 400) {
@@ -145,7 +151,11 @@ class ProposalService {
     })
 
     return await this.axiosToken
-      .post<any>(`/proposals/edit/${id}`, formData)
+      .post<any>(`/proposals/edit/${id}`, formData, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+      })
       .then((response: any) => response.data)
       .catch((error: any) => {
         if (error.response?.status === 400) {
@@ -160,7 +170,11 @@ class ProposalService {
 
   async getDraft(id: number): Promise<Proposal> {
     return await this.axiosToken
-      .get<Proposal>(`/proposals/${id}`)
+      .get<Proposal>(`/proposals/${id}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+      })
       .then((response: any) => {
         const { url_doc_1, url_doc_2, url_doc_3, url_doc_4, url_image, ...data } = response.data
         return {
@@ -185,7 +199,11 @@ class ProposalService {
 
   async getDrafts(): Promise<Proposal[]> {
     return await this.axiosToken
-      .get<Proposal[]>('/proposals')
+      .get<Proposal[]>('/proposals', {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+      })
       .then((response: any) => {
         return response.data.map((data: Proposal) => {
           return {

@@ -25,9 +25,18 @@ class AuthService {
 
   async checkToken(): Promise<boolean> {
     return await this.axiosToken
-      .post<[boolean]>('/check')
+      .post<[boolean]>(
+        '/check',
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        },
+      )
       .then((response) => response.data[0])
       .catch((error) => {
+        console.log(error)
         if (error.response?.status === 401) {
           throw new Error('Token inválido')
         }
@@ -59,10 +68,12 @@ class AuthService {
         if (error.response?.status === 404) {
           throw new CustomError('Usuario no encontrado', 404)
         }
+        if (error.response?.status === 400) {
+          throw new CustomError('Email ya registrado', 400)
+        }
         if (error.response?.status === 403) {
           throw new CustomError('Credenciales Incorrectas', 403)
         }
-
         throw new CustomError('Error al iniciar sesión', 500)
       })
   }

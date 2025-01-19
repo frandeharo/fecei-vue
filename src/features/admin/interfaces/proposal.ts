@@ -28,4 +28,5 @@ export interface Proposal {
   status: string
   created_at?: string
   updated_at?: string
+  user_name?: string
 }

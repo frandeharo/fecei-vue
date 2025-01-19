@@ -10,9 +10,12 @@ import useCategories from '@/shared/composables/useCategories';
 import type { Proposal } from '../interfaces/proposal';
 import useDownload from '../../../shared/composables/useDownload';
 import { InformationCircleIcon } from '@heroicons/vue/20/solid'
-const { categories } = useCategories();
+import useAuth from '@/auth/composables/useAuth';
 
+const { categories } = useCategories();
 const { downloadDoc } = useDownload();
+const { role } = useAuth();
+
 
 interface Emits {
     (e: 'onSend', v: any): any
@@ -502,6 +505,7 @@ const onDraft = () => {
     <div class="mt-6 flex items-center justify-end gap-x-6">
       <RouterLink :to="{name:'home'}"  class="text-sm/6 font-semibold text-gray-900">Salir sin guardar</RouterLink>
 
+      <template v-if="role !== 'ADMIN'">
       <Button
         type="button"
         v-if="props.proposal?.status !== 'SENT'"
@@ -522,6 +526,7 @@ const onDraft = () => {
         type="submit" class="rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600">
 
       </Button>
+      </template>
     </div>
   </form>
 

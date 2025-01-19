@@ -2,17 +2,23 @@
 import { PencilSquareIcon, EyeIcon } from '@heroicons/vue/24/outline'
 import useDrafts from '../composables/useDrafts';
 import { useRouter } from 'vue-router';
+import useAuth from '@/auth/composables/useAuth';
+import useDownload from '@/shared/composables/useDownload';
 
 
 const {isLoading, data} = useDrafts();
 const router = useRouter();
 
 
+const { role } = useAuth();
+
+const { isLoadingExport,downloadProposal } = useDownload();
 
 // :rowsPerPageOptions="[30, 50, 100, 200]"
 </script>
 
 <template>
+
     <div>
         <DataTable
             :value="data"
@@ -26,12 +32,30 @@ const router = useRouter();
             selectionMode="single"
             :rows="10" tableStyle="min-width: 50rem" tableClass="w-full" >
 
+            <template #header v-if="role === 'ADMIN'">
+                <div class="flex justify-end items-center">
+                    <Button
+                      label="Descargar"
+                      @click="downloadProposal()"
+                      :loading="isLoadingExport"
+                      icon="pi pi-download"
+                      iconPos="left"
+                      class="rounded bg-white px-2 py-1 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                    />
+                </div>
+            </template>
+
             <template #empty> No ha realizado ninguna propuesta. </template>
             <template #loading> Buscando propuestas. Por favor espere. </template>
 
             <Column field="id" header="Referencia" class="text-xs" :showFilterMenu="false">
                 <template #body="{ data }">
                     #{{ data.id }}
+                </template>
+            </Column>
+            <Column field="user_name" header="Proponente" class="text-xs" :showFilterMenu="false">
+                <template #body="{ data }">
+                    {{ data.user_name }}
                 </template>
             </Column>
 
@@ -68,8 +92,14 @@ const router = useRouter();
             </Column>
             <Column field="id" header="" class="text-xs" :showFilterMenu="false">
                 <template #body="{ data }">
-                    <PencilSquareIcon class="h-5 w-5 text-blue-500 cursor-pointer" v-if="data.status === 'DRAFT'" />
-                    <EyeIcon class="h-5 w-5 text-blue-500 cursor-pointer" v-else />
+                    <template v-if="role === 'ADMIN'">
+                        <EyeIcon class="h-5 w-5 text-blue-500 cursor-pointer" />
+                    </template>
+                    <template v-else>
+                        <PencilSquareIcon class="h-5 w-5 text-blue-500 cursor-pointer" v-if="data.status === 'DRAFT'" />
+                        <EyeIcon class="h-5 w-5 text-blue-500 cursor-pointer" v-else />
+                    </template>
+
                 </template>
             </Column>
 

@@ -19,6 +19,14 @@ const useDownload = () => {
     retry: false,
   })
 
+  const { refetch: downloadExport, isLoading: isLoadingExport } = useQuery({
+    queryKey: ['download', id.value],
+    queryFn: async () => sharedService.export(),
+    enabled: false,
+    staleTime: 1000 * 60 * 5,
+    retry: false,
+  })
+
   const getExtension = (file_name: string) => {
     const extension = file_name.split('.').pop()
     return extension
@@ -26,6 +34,7 @@ const useDownload = () => {
 
   return {
     isLoadingPdf,
+    isLoadingExport,
     downloadDoc: (idProposal: number, field_name: string, name_doc: string) => {
       id.value = idProposal
       field.value = field_name
@@ -36,6 +45,17 @@ const useDownload = () => {
           const extension = getExtension(name_doc)
           const fileName = `${name_doc}.${extension}`
 
+          saveAs(response.data as Blob, fileName)
+        })
+        .catch(() => {
+          toast.add({ severity: 'error', summary: 'Error', detail: 'Error al descargar el pdf' })
+        })
+    },
+
+    downloadProposal: () => {
+      downloadExport()
+        .then((response) => {
+          const fileName = `export_proposals.xlsx`
           saveAs(response.data as Blob, fileName)
         })
         .catch(() => {
