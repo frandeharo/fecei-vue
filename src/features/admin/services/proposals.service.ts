@@ -128,9 +128,9 @@ class ProposalService {
           throw new Error('Datos incorrectos')
         }
         if (error.response?.status === 403) {
-          throw new Error('No tiene permisos para crear el cliente')
+          throw new Error('No tiene permisos para editar la propuesta')
         }
-        throw new Error('Error al crear cliente')
+        throw new Error('Error al editar la propuesta')
       })
   }
 
@@ -223,6 +223,44 @@ class ProposalService {
           throw new Error('No tiene permisos para crear el cliente')
         }
         throw new Error('Error al crear cliente')
+      })
+  }
+
+  async deleteProposal(id: number): Promise<any> {
+    return await this.axiosToken
+      .post<any>(`/proposals/delete/${id}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+      })
+      .then((response: any) => response.data)
+      .catch((error: any) => {
+        if (error.response?.status === 400) {
+          throw new Error('Datos incorrectos')
+        }
+        if (error.response?.status === 403) {
+          throw new Error('No tiene permisos para borrar la propuesta')
+        }
+        throw new Error('Error al borrar la propuesta')
+      })
+  }
+
+  async openProposal(id: number): Promise<any> {
+    return await this.axiosToken
+      .post<any>(`/proposals/open/${id}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+      })
+      .then((response: any) => response.data)
+      .catch((error: any) => {
+        if (error.response?.status === 400) {
+          throw new Error('Datos incorrectos')
+        }
+        if (error.response?.status === 403) {
+          throw new Error('No tiene permisos para abrir la propuesta')
+        }
+        throw new Error('Error al abrir la propuesta')
       })
   }
 }

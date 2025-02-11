@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useMutation, useQueryClient } from '@tanstack/vue-query'
-import { toRaw } from 'vue'
+import { ref, toRaw } from 'vue'
 import type { DraftFrm } from '../interfaces/draftFrm'
 import proposalsService from '../services/proposals.service'
 import { useToast } from 'primevue'
@@ -10,6 +10,9 @@ const useDraftMutation = () => {
   const toast = useToast()
   const router = useRouter()
   const queryClient = useQueryClient()
+
+  const visibleDialog = ref(false)
+  const selectedProposal = ref<number | null>()
 
   const dataFromdraft = (e: any) => {
     const newData: Record<string, any> = {}
@@ -114,6 +117,52 @@ const useDraftMutation = () => {
     },
   })
 
+  const { mutate: openProposal } = useMutation({
+    mutationFn: (id: number) => proposalsService.openProposal(id),
+    onError: () => {
+      toast.add({
+        severity: 'error',
+        summary: 'Error al abrir la propuesta',
+        detail: 'Contacte con el administrador',
+      })
+    },
+    onSuccess: () => {
+      toast.add({ severity: 'success', summary: 'Propuesta abierta', detail: '' })
+      queryClient.refetchQueries({
+        queryKey: ['drafts'],
+        exact: false,
+      })
+    },
+  })
+
+  // delete
+  const { mutate: deleteProposal } = useMutation({
+    mutationFn: () => proposalsService.deleteProposal(selectedProposal.value!),
+    onError: () => {
+      toast.add({
+        severity: 'error',
+        summary: 'Error al eliminar la propuesta',
+        detail: 'Contacte con el administrador',
+      })
+    },
+    onSuccess: () => {
+      toast.add({
+        severity: 'error',
+        summary: 'Propuesta eliminada',
+        detail: `La propuesta #${selectedProposal.value} ha sido eliminada`,
+      })
+      queryClient.refetchQueries({
+        queryKey: ['drafts'],
+        exact: false,
+      })
+      queryClient.refetchQueries({
+        queryKey: ['draft'],
+        exact: false,
+      })
+      visibleDialog.value = false
+    },
+  })
+
   return {
     isPending,
     isPendingSend,
@@ -123,6 +172,8 @@ const useDraftMutation = () => {
     error,
     isSuccess,
     isSuccessSend,
+    visibleDialog,
+    selectedProposal,
     saveDraft: (data: DraftFrm) => {
       const newData = dataFromdraft(data)
 
@@ -144,6 +195,12 @@ const useDraftMutation = () => {
         mutateSend(data)
         return
       }
+    },
+    openProposal: (id: number) => openProposal(id),
+    deleteProposal,
+    openDialog: (id: number) => {
+      selectedProposal.value = id
+      visibleDialog.value = true
     },
   }
 }

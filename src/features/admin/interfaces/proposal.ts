@@ -4,6 +4,7 @@ export interface Proposal {
   resumen: string
   category_id: number
   proponent: string
+  category_name: string
   entity: string
   location: string
   phone_contact: string
