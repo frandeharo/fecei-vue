@@ -19,7 +19,7 @@ const { isPending, saveDraft, sendProposal } = useDraftMutation();
     </div>
 
     <div class="mx-auto max-w-2xl text-center">
-      <h2 class="text-4xl font-semibold tracking-tight text-white sm:text-4xl">Presentar una Candidatura Premios FCEI TOP</h2>
+      <h2 class="text-4xl font-semibold tracking-tight text-white sm:text-4xl">Presentar una Candidatura Premios FECEI TOP</h2>
     </div>
   </div>
 

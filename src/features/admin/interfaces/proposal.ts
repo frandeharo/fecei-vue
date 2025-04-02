@@ -27,6 +27,7 @@ export interface Proposal {
   testimonial_3: string
   links: string[]
   status: string
+  isFinalist: number
   created_at?: string
   updated_at?: string
   user_name?: string

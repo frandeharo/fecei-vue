@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { PencilSquareIcon, EyeIcon, LockClosedIcon, TrashIcon } from '@heroicons/vue/24/outline'
+import { PencilSquareIcon, EyeIcon, LockClosedIcon, TrashIcon, StarIcon } from '@heroicons/vue/24/outline'
 import useDrafts from '../composables/useDrafts';
 import { useRouter } from 'vue-router';
 import useAuth from '@/auth/composables/useAuth';
@@ -15,7 +15,7 @@ const { role } = useAuth();
 
 const { isLoadingExport,downloadProposal } = useDownload();
 
-const { openProposal, deleteProposal, visibleDialog, openDialog } = useDraftMutation();
+const { openProposal, deleteProposal, visibleDialog, openDialog, finalist } = useDraftMutation();
 
 
 </script>
@@ -122,11 +122,22 @@ const { openProposal, deleteProposal, visibleDialog, openDialog } = useDraftMuta
                         </div>
                         <LockClosedIcon class="h-5 w-5 text-orange-500 cursor-pointer" v-if="data.status === 'SENT'" @click="openProposal(data.id)" />
                         <TrashIcon class="h-5 w-5 text-red-500 cursor-pointer" @click="openDialog(data.id)" />
+
+                        <StarIcon
+                          class="h-5 w-5 cursor-pointer"
+                          :class="{'text-yellow-500 fill-yellow-500': data.isFinalist === 1}"
+                          @click="finalist(data.id, (data.isFinalist === 1) ? 0 : 1)" />
+
+
                     </div>
-                    <div v-else class="flex space-x-2">
+                    <div v-if="role === 'USER'" class="flex space-x-2">
                         <PencilSquareIcon class="h-5 w-5 text-blue-500 cursor-pointer" v-if="data.status === 'DRAFT'" @click="router.push({name:'edit-proposal', params:{id:data.id}})" />
                         <EyeIcon class="h-5 w-5 text-blue-500 cursor-pointer" @click="router.push({name:'edit-proposal', params:{id:data.id}})" v-else />
                         <TrashIcon class="h-5 w-5 text-red-500 cursor-pointer" @click="openDialog(data.id)" />
+                    </div>
+
+                    <div v-if="role === 'REV'" class="flex space-x-2">
+                      <EyeIcon class="h-5 w-5 text-blue-500 cursor-pointer" @click="router.push({name:'edit-proposal', params:{id:data.id}})" />
                     </div>
 
                 </template>

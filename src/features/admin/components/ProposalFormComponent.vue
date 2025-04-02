@@ -10,6 +10,7 @@ import useCategories from '@/shared/composables/useCategories';
 import type { Proposal } from '../interfaces/proposal';
 import useDownload from '../../../shared/composables/useDownload';
 import { InformationCircleIcon } from '@heroicons/vue/20/solid'
+import useAuth from '@/auth/composables/useAuth';
 
 const { categories } = useCategories();
 const { downloadDoc } = useDownload();
@@ -26,6 +27,8 @@ interface Props {
    isSending: boolean
    proposal?: Proposal
 }
+
+const { role } = useAuth();
 
 const emits = defineEmits<Emits>();
 const props = defineProps<Props>();
@@ -236,6 +239,7 @@ const onDraft = () => {
               <InputText name="url_doc_1" class="hidden" />
               <FileUpload
                 id="doc-1"
+                :disabled="(role === 'REV') ? true : false"
                 class="rounded bg-gray-950 px-2 py-1 text-sm font-semibold text-white shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-600"
                 ref="fileupload"
                 mode="basic"
@@ -256,6 +260,7 @@ const onDraft = () => {
               <InputText name="url_doc_2" class="hidden" />
               <FileUpload
                 id="doc-2"
+                :disabled="(role === 'REV') ? true : false"
                 class="rounded bg-gray-950 px-2 py-1 text-sm font-semibold text-white shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-600"
                 ref="fileupload"
                 mode="basic"
@@ -277,6 +282,7 @@ const onDraft = () => {
               <InputText name="url_doc_3" class="hidden" />
               <FileUpload
                 id="doc-3"
+                :disabled="(role === 'REV') ? true : false"
                 class="rounded bg-gray-950 px-2 py-1 text-sm font-semibold text-white shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-600"
                 ref="fileupload"
                 mode="basic"
@@ -297,6 +303,7 @@ const onDraft = () => {
               <InputText name="url_doc_4" class="hidden" />
               <FileUpload
                 id="doc-4"
+                :disabled="(role === 'REV') ? true : false"
                 class="rounded bg-gray-950 px-2 py-1 text-sm font-semibold text-white shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-600"
                 ref="fileupload"
                 mode="basic"
@@ -347,6 +354,7 @@ const onDraft = () => {
               <InputText name="url_image" class="hidden" />
               <FileUpload
                 accept="image/*"
+                :disabled="(role === 'REV') ? true : false"
                 :customUpload="true"
                 @select="onSelectImage"
                 id="url_image"
@@ -453,6 +461,7 @@ const onDraft = () => {
             class="rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
             icon="pi pi-plus"
             @click="addLink"
+            v-if="props.proposal?.status === 'SENT' || role != 'REV'"
           />
           </div>
           <InputText name="links" class="hidden" />
@@ -471,6 +480,7 @@ const onDraft = () => {
               </div>
               <div class="md:col-span-1 items-center justify-center flex">
               <Button
+                v-if="props.proposal?.status === 'SENT' || role != 'REV'"
                 label="Eliminar"
                 icon="pi pi-trash"
                 class="rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ed-600"
@@ -503,7 +513,7 @@ const onDraft = () => {
     <div class="mt-6 flex items-center justify-end gap-x-6">
       <RouterLink :to="{name:'home'}"  class="text-sm/6 font-semibold text-gray-900">Salir sin guardar</RouterLink>
 
-
+      <div v-if="role != 'REV'">
       <Button
         type="button"
         v-if="props.proposal?.status !== 'SENT'"
@@ -512,7 +522,7 @@ const onDraft = () => {
         :loading="props.isSavingDraft"
         :disabled="props.isSavingDraft"
         @click="onDraft()"
-        class="rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+        class="rounded-md me-2 bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
       ></Button>
 
       <Button
@@ -524,6 +534,7 @@ const onDraft = () => {
         type="submit" class="rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600">
 
       </Button>
+      </div>
 
     </div>
   </form>

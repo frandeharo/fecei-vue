@@ -263,6 +263,29 @@ class ProposalService {
         throw new Error('Error al abrir la propuesta')
       })
   }
+
+  async setFinalist(id: number, isFinalist: number): Promise<any> {
+    return await this.axiosToken
+      .post<any>(
+        `/utils/final/${id}`,
+        { isFinalist },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        },
+      )
+      .then((response: any) => response.data)
+      .catch((error: any) => {
+        if (error.response?.status === 400) {
+          throw new Error('Datos incorrectos')
+        }
+        if (error.response?.status === 403) {
+          throw new Error('No tiene permisos para abrir la propuesta')
+        }
+        throw new Error('Error al abrir la propuesta')
+      })
+  }
 }
 
 export default new ProposalService()

@@ -135,6 +135,29 @@ const useDraftMutation = () => {
     },
   })
 
+  const { mutate: setFinalist } = useMutation({
+    mutationFn: ({ id, isFinalist }: { id: number; isFinalist: number }) =>
+      proposalsService.setFinalist(id, isFinalist),
+    onError: () => {
+      toast.add({
+        severity: 'error',
+        summary: 'Error al abrir la propuesta',
+        detail: 'Contacte con el administrador',
+      })
+    },
+    onSuccess: () => {
+      toast.add({
+        severity: 'success',
+        summary: 'Finalista actualizado',
+        detail: '',
+      })
+      queryClient.refetchQueries({
+        queryKey: ['drafts'],
+        exact: false,
+      })
+    },
+  })
+
   // delete
   const { mutate: deleteProposal } = useMutation({
     mutationFn: () => proposalsService.deleteProposal(selectedProposal.value!),
@@ -197,6 +220,7 @@ const useDraftMutation = () => {
       }
     },
     openProposal: (id: number) => openProposal(id),
+    finalist: (id: number, isFinalist: number) => setFinalist({ id, isFinalist }),
     deleteProposal,
     openDialog: (id: number) => {
       selectedProposal.value = id
